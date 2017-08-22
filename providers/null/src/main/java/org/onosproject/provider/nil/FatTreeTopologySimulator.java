@@ -90,10 +90,10 @@ public class FatTreeTopologySimulator extends TopologySimulator {
                     int coreSwitch = i * end + j;
                     int aggSwitch = startOfAgg + x + i;
 
-                    createLink(coreSwitch,
-                               aggSwitch,
-                               portList[coreSwitch]++,
-                               portList[aggSwitch]++);
+                    createLink(coreSwitch, aggSwitch, portList[coreSwitch],
+                               portList[aggSwitch]);
+                    portList[coreSwitch] += 1;
+                    portList[aggSwitch] += 1;
                 }
             }
         }
@@ -105,10 +105,10 @@ public class FatTreeTopologySimulator extends TopologySimulator {
                     int aggSwitch = startOfAgg + x + i;
                     int edgeSwitch = startOfEdge + x + j;
 
-                    createLink(aggSwitch,
-                               edgeSwitch,
-                               portList[aggSwitch]++,
-                               portList[edgeSwitch]++);
+                    createLink(aggSwitch, edgeSwitch, portList[aggSwitch],
+                               portList[edgeSwitch]);
+                    portList[aggSwitch] += 1;
+                    portList[edgeSwitch] += 1;
                 }
             }
         }
