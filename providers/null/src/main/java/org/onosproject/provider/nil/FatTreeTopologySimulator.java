@@ -67,7 +67,7 @@ public class FatTreeTopologySimulator extends TopologySimulator {
 
         // For each switch keep a count of used ports
         int[] portList = new int[deviceCount];
-        Arrays.fill(portList, 0);
+        Arrays.fill(portList, 1);
 
         // we assume that deviceIds stores all the fat tree switches in a flat list
         int end = numberOfPods / 2;
