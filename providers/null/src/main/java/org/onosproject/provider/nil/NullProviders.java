@@ -39,6 +39,10 @@ import org.onosproject.net.device.DeviceProviderRegistry;
 import org.onosproject.net.device.DeviceProviderService;
 import org.onosproject.net.flow.FlowRuleProviderRegistry;
 import org.onosproject.net.flow.FlowRuleProviderService;
+import org.onosproject.net.group.GroupOperations;
+import org.onosproject.net.group.GroupProvider;
+import org.onosproject.net.group.GroupProviderRegistry;
+import org.onosproject.net.group.GroupProviderService;
 import org.onosproject.net.host.HostProvider;
 import org.onosproject.net.host.HostProviderRegistry;
 import org.onosproject.net.host.HostProviderService;
@@ -118,12 +122,16 @@ public class NullProviders {
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
     protected PacketProviderRegistry packetProviderRegistry;
 
+    @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
+    protected GroupProviderRegistry providerRegistry;
+
     private final NullDeviceProvider deviceProvider = new NullDeviceProvider();
     private final NullLinkProvider linkProvider = new NullLinkProvider();
     private final NullHostProvider hostProvider = new NullHostProvider();
     private final NullFlowRuleProvider flowRuleProvider = new NullFlowRuleProvider();
     private final NullPacketProvider packetProvider = new NullPacketProvider();
     private final TopologyMutationDriver topologyMutationDriver = new TopologyMutationDriver();
+    private final NullGroupProvider nullGroupProvider = new NullGroupProvider();
 
     private DeviceProviderService deviceProviderService;
     private HostProviderService hostProviderService;
@@ -167,9 +175,12 @@ public class NullProviders {
             label = "Mastership given as 'random' or 'node1=dpid,dpid/node2=dpid,...'")
     private String mastership = DEFAULT_MASTERSHIP;
 
+    private GroupProviderService providerService;
+
 
     @Activate
     public void activate() {
+        providerService = providerRegistry.register(nullGroupProvider);
         cfgService.registerProperties(getClass());
 
         deviceProviderService = deviceProviderRegistry.register(deviceProvider);
@@ -182,6 +193,7 @@ public class NullProviders {
 
     @Deactivate
     public void deactivate() {
+        providerService = null;
         cfgService.unregisterProperties(getClass(), false);
         tearDown();
 
@@ -337,7 +349,8 @@ public class NullProviders {
         simulator.init(topoShape, deviceCount, hostCount,
                        new DefaultServiceDirectory(),
                        deviceProviderService, hostProviderService,
-                       linkProviderService);
+                       linkProviderService,
+                       providerService);
         flowRuleProvider.start(flowRuleProviderService);
         packetProvider.start(packetRate, hostService, deviceService,
                              packetProviderService);
@@ -466,4 +479,10 @@ public class NullProviders {
     private class NullLinkProvider extends AbstractNullProvider implements LinkProvider {
     }
 
+    private class NullGroupProvider extends AbstractNullProvider implements GroupProvider {
+        @Override
+        public void performGroupOperation(DeviceId deviceId,
+                                          GroupOperations groupOps) {
+        }
+    }
 }
