@@ -38,6 +38,8 @@ public class FatTreeTopologySimulator extends TopologySimulator {
                 DEFAULT_NUMBER_OF_PORTS_PER_SWITCH :
                 Integer.parseInt(topoShape[1]);
 
+        checkArgument(k > 1, "Fat Tree switches must have at **least** 2 ports each!");
+
         // A fat-tree is parametrized by the total number of ports per switch.
         // check top of page 4 of http://web.eecs.umich.edu/~mosharaf/Readings/Fat-Tree.pdf
         kPorts = k;
@@ -48,14 +50,7 @@ public class FatTreeTopologySimulator extends TopologySimulator {
 
         // need to also change hostCount variable of TopologySimulator
         hostCount = kPorts / 2;
-    }
-
-
-    @Override
-    public void setUpTopology() {
-
-        checkArgument(kPorts > 1, "Fat Tree switches must " +
-                       "have at **least** 2 ports each!");
+        infrastructurePorts = kPorts / 2;
 
         // this is the total number of **Switches**
         // in a fat-tree topology
@@ -65,14 +60,6 @@ public class FatTreeTopologySimulator extends TopologySimulator {
 
         log.info("Booting a {} with {}-ports, {} switches in total {} pods",
                   topoShape[0], kPorts, deviceCount,  numberOfPods);
-
-
-        prepareForDeviceEvents(deviceCount);
-        createDevices();
-        waitForDeviceEvents();
-
-        createLinks();
-        createHosts();
     }
 
     @Override
