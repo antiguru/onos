@@ -41,6 +41,8 @@ import org.onosproject.net.device.DeviceEvent;
 import org.onosproject.net.device.DeviceListener;
 import org.onosproject.net.device.DeviceProviderService;
 import org.onosproject.net.device.PortDescription;
+import org.onosproject.net.group.GroupOperations;
+import org.onosproject.net.group.GroupProviderService;
 import org.onosproject.net.host.DefaultHostDescription;
 import org.onosproject.net.host.HostDescription;
 import org.onosproject.net.host.HostProviderService;
@@ -95,6 +97,8 @@ public abstract class TopologySimulator {
 
     private DeviceListener deviceEventCounter = new DeviceEventCounter();
 
+    private GroupProviderService providerService;
+
     /**
      * Initializes a new topology simulator with access to the specified service
      * directory and various provider services.
@@ -106,12 +110,14 @@ public abstract class TopologySimulator {
      * @param deviceProviderService device provider service
      * @param hostProviderService   host provider service
      * @param linkProviderService   link provider service
+     * @param providerService       group provider service
      */
     protected void init(String topoShape, int deviceCount, int hostCount,
                         ServiceDirectory directory,
                         DeviceProviderService deviceProviderService,
                         HostProviderService hostProviderService,
-                        LinkProviderService linkProviderService) {
+                        LinkProviderService linkProviderService,
+                        GroupProviderService providerService) {
         this.deviceCount = deviceCount;
         this.hostCount = hostCount;
         this.directory = directory;
@@ -125,6 +131,7 @@ public abstract class TopologySimulator {
         this.deviceProviderService = deviceProviderService;
         this.hostProviderService = hostProviderService;
         this.linkProviderService = linkProviderService;
+        this.providerService = providerService;
 
         localNode = clusterService.getLocalNode().id();
 
@@ -207,6 +214,7 @@ public abstract class TopologySimulator {
                                              new ChassisId(chassisId));
         deviceProviderService.deviceConnected(id, desc);
         deviceProviderService.updatePorts(id, buildPorts(portCount));
+        providerService.pushGroupMetrics(id, Collections.emptyList());
     }
 
     /**
