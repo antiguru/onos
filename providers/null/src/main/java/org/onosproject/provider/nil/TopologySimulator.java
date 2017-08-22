@@ -383,7 +383,7 @@ public abstract class TopologySimulator {
      */
     static HostDescription description(HostId hostId, IpAddress ip,
                                        DeviceId deviceId, int port) {
-        HostLocation location = new HostLocation(deviceId, portNumber(port), 0L);
+        HostLocation location = new HostLocation(deviceId, portNumber(port), System.currentTimeMillis());
         return new DefaultHostDescription(hostId.mac(), hostId.vlanId(), location, ip);
     }
 
