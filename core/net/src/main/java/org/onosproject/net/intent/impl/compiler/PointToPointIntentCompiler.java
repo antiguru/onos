@@ -136,6 +136,7 @@ public class PointToPointIntentCompiler
             return createUnprotectedLinkCollectionIntent(intent);
         }
 
+        long before = System.nanoTime();
         try {
             // attempt to compute and implement backup path
             return createProtectedIntent(ingressPoint, egressPoint, intent, installable);
@@ -143,6 +144,9 @@ public class PointToPointIntentCompiler
             log.warn("Could not find disjoint Path for {}", intent);
             // no disjoint path extant -- maximum one path exists between devices
             return createSinglePathIntent(ingressPoint, egressPoint, intent, installable);
+        } finally {
+            long after = System.nanoTime();
+            log.debug("[DP] {} path_compilation {}", intent.id(), after - before);
         }
     }
 
