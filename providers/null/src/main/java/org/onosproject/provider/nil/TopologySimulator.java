@@ -249,22 +249,22 @@ public abstract class TopologySimulator {
     }
 
     /**
-     * Creates simularted hosts for the specified device.
+     * Creates simulated hosts for the specified device.
      *
      * @param deviceId   device identifier
      * @param portOffset port offset where to start attaching hosts
      */
     public void createHosts(DeviceId deviceId, int portOffset) {
+        log.debug("Creating hosts for device {}, portOffset={}", deviceId, portOffset);
         String s = deviceId.toString();
-        byte dByte = Byte.parseByte(s.substring(s.length() - 2), 16);
-        // TODO: this limits the simulation to 256 devices & 256 hosts/device.
-        byte[] macBytes = new byte[]{0, 0, 0, 0, dByte, 0};
-        byte[] ipBytes = new byte[]{(byte) 192, (byte) 168, dByte, 0};
+        int dByte = Integer.parseInt(s.substring(s.length() - 4), 16) * hostCount;
 
         for (int i = 0; i < hostCount; i++) {
             int port = portOffset + i + 1;
-            macBytes[5] = (byte) (i + 1);
-            ipBytes[3] = (byte) (i + 1);
+            dByte += 1;
+            byte[] macBytes = new byte[]{0, 0, 0, (byte) (dByte >>16), (byte) (dByte >> 8), (byte) (dByte & 0xFF)};
+            byte[] ipBytes = new byte[]{(byte) 10, (byte) (dByte >>16), (byte) (dByte >> 8), (byte) (dByte & 0xFF)};
+            log.debug("mac={}, IP={}", Arrays.toString(macBytes), Arrays.toString(ipBytes));
             HostId id = hostId(MacAddress.valueOf(macBytes), VlanId.NONE);
             IpAddress ip = IpAddress.valueOf(IpAddress.Version.INET, ipBytes);
             hostProviderService.hostDetected(id, description(id, ip, deviceId, port), false);
